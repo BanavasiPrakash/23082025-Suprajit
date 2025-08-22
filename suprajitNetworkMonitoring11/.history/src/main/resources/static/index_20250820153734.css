@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #0077cc;
+}
+
+section {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+form {
+    display: flex;
+    gap: 10px;
+}
+
+form input {
+    flex: 1;
+    padding: 8px;
+}
+
+form button {
+    background: #0077cc;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background: #0077cc;
+    color: white;
+}
+
+.status-green { color: white; background-color: green; }
+.status-yellow { color: black; background-color: yellow; }
+.status-orange { color: black; background-color: orange; }
+.status-red { color: white; background-color: red; }
+
+
+.nav-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background: #0077cc;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.delete-btn {
+    background-color: #d43d3d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.delete-btn:hover {
+    background-color: #b52b2b;
+}

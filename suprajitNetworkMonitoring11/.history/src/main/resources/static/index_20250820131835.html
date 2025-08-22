@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SUPRAJIT IP HEALTH STATUS</title>
+    <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+    <header>
+        <h1>SUPRAJIT IP HEALTH STATUS</h1>
+    </header>
+    <main>
+        <section class="form-section">
+            <h2>Add New IP</h2>
+            <form id="ipForm">
+                <input type="text" id="location" placeholder="Enter Location Name" required />
+                <input type="text" id="ipAddress" placeholder="Enter IP Address" required />
+                <button type="submit">Add</button>
+            </form>
+        </section>
+        <section class="list-section">
+            <h2>Stored IP Addresses</h2>
+            <table id="ipTable">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>IP Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody><!-- Populated dynamically --></tbody>
+            </table>
+        </section>
+        <div class="navigation">
+            <a href="status.html" class="nav-button">Go to Status Page</a>
+        </div>
+    </main>
+    <script src="script-index.js"></script>
+</body>
+</html>

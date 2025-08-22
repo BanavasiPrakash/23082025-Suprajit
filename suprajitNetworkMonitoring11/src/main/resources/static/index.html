@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IP Tracker - Add IP</title>
+    <link rel="stylesheet" href="index.css" />
+    <style>
+        .nav-button, #logoutBtn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 10px 5px 0 0;
+            background-color: #ef6724;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .nav-button:hover, #logoutBtn:hover {
+            background-color: #bd2331;
+        }
+        .navigation {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container-vertical">
+            <img src="suprajit_logo_BG.png" alt="Suprajit Logo" class="suprajit-logo" />
+            <div class="title-and-updated">
+                <h1>IP HEALTH STATUS</h1>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <form id="ipForm">
+                <h2>Add New IP</h2>
+                <input type="text" id="location" placeholder="Enter Location Name" required />
+                <input type="text" id="ipAddress" placeholder="Enter IP Address" required />
+                <button type="submit">Add</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <h2>Stored IP Addresses</h2>
+            <table id="ipTable">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>IP Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </section>
+
+        <div class="navigation">
+            <a href="status.html" class="nav-button">Go to Status Page</a>
+            <button id="logoutBtn">Logout / Go to Login</button>
+        </div>
+    </main>
+
+    <script src="script-index.js"></script>
+    <script>
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = "auth.html";
+        });
+    </script>
+</body>
+</html>

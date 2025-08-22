@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup & Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding-top: 50px; }
+    .container { background: white; padding: 30px; box-shadow: 0 0 10px #ccc; width: 350px; border-radius: 8px; }
+    h2 { text-align: center; margin-bottom: 20px; }
+    form { display: none; }
+    form.active { display: block; }
+    input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; }
+    .tab { cursor: pointer; padding: 10px; border-bottom: 2px solid transparent; font-weight: bold; }
+    .tab.active { border-color: #007bff; color: #007bff; }
+    .message { margin: 15px 0; padding: 10px; border-radius: 5px; }
+    .success { background-color: #d4edda; color: #155724; }
+    .error { background-color: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tabs">
+      <div id="signup-tab" class="tab active" onclick="switchTab('signup')">Sign Up</div>
+      <div id="login-tab" class="tab" onclick="switchTab('login')">Log In</div>
+    </div>
+
+    <form id="signup-form" class="active" onsubmit="submitSignup(event)">
+      <input type="text" id="signup-username" placeholder="Username" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+      <div id="signup-message" class="message"></div>
+    </form>
+
+    <form id="login-form" onsubmit="submitLogin(event)">
+      <input type="text" id="login-username" placeholder="Username" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit">Log In</button>
+      <div id="login-message" class="message"></div>
+    </form>
+  </div>
+
+  <script>
+    let currentUser = {
+      username: null,
+      password: null
+    };
+
+    function switchTab(tab) {
+      document.getElementById('signup-form').classList.toggle('active', tab === 'signup');
+      document.getElementById('login-form').classList.toggle('active', tab === 'login');
+      document.getElementById('signup-tab').classList.toggle('active', tab === 'signup');
+      document.getElementById('login-tab').classList.toggle('active', tab === 'login');
+
+      // Clear messages
+      document.getElementById('signup-message').textContent = '';
+      document.getElementById('login-message').textContent = '';
+    }
+
+    async function submitSignup(event) {
+      event.preventDefault();
+      const username = document.getElementById('signup-username').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+      const msg = document.getElementById('signup-message');
+      msg.textContent = '';
+      msg.className = 'message';
+
+      try {
+        const res = await fetch('http://localhost:8080/api/auth/signup', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: new URLSearchParams({username, password})
+        });
+        const text = await res.text();
+        if (res.ok) {
+          msg.textContent = 'Signup successful! Please log in.';
+          msg.classList.add('success');
+          switchTab('login');
+        } else {
+          msg.textContent = text || 'Signup failed.';
+          msg.classList.add('error');
+        }
+      } catch (error) {
+        msg.textContent = 'Error: ' + error.message;
+        msg.classList.add('error');
+      }
+    }
+
+    async function submitLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const msg = document.getElementById('login-message');
+      msg.textContent = '';
+      msg.className = 'message';
+
+      try {
+        const res = await fetch('http://localhost:8080/api/auth/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: new URLSearchParams({username, password})
+        });
+        const text = await res.text();
+        if (res.ok) {
+          // Save credentials for subsequent requests
+          currentUser.username = username;
+          currentUser.password = password;
+
+          msg.textContent = 'Login successful! You can now access protected pages.';
+          msg.classList.add('success');
+
+          // Redirect or open the main app page (optional)
+          window.location.href = 'index.html';
+        } else {
+          msg.textContent = text || 'Login failed.';
+          msg.classList.add('error');
+        }
+      } catch (error) {
+        msg.textContent = 'Error: ' + error.message;
+        msg.classList.add('error');
+      }
+    }
+  </script>
+</body>
+</html>

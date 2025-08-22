@@ -1,0 +1,167 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&display=swap');
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding-top: 140px; /* Space for titles/buttons */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #1e4489 0%, #3FA8ED 20%, #5a2e9d 85%);
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo as background shadow */
+body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 1000px;
+  height: 1000px;
+  background: url('suprajit_logo.png') no-repeat center center;
+  background-size: contain;
+  opacity: 0.06; /* Strength of shadow */
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+  animation: rotateLogo 8s linear infinite; /* add rotation animation */
+}
+
+@keyframes rotateLogo {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.suprajit-logo {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: auto;
+  height: 80px;
+  z-index: 1000;
+}
+
+.company-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 70px;
+  color: white;
+  margin: 0 0 10px 0;
+  text-align: center;
+  letter-spacing: 3px;
+}
+
+.page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 50px;
+  font-weight: 900;
+  margin: 0 0 40px 0;
+  text-align: center;
+  color: white;
+}
+
+.button-group {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+  z-index: 1001;
+}
+
+.control-btn {
+  padding: 10px 20px;
+  font-weight: bold;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  min-width: 100px;
+  background: linear-gradient(90deg, #5a2e9d 0%, #1e4489 65%);
+  box-shadow: 0 2px 8px #2c2c2c33;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.control-btn:hover {
+  background: linear-gradient(90deg, #bd2331 0%, #5a2e9d 100%);
+  border-color: #bd2331;
+}
+
+.control-btn.active {
+  background: linear-gradient(90deg, #bd2331 0%, #5a2e9d 70%);
+  border-color: #bd2331;
+}
+
+.container {
+  background: #fff;
+  box-shadow: 0 0 12px #2c2c2c55;
+  border: 2px solid #5a2e9d;
+  width: 350px;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  display: none;
+  position: relative;
+  z-index: 1;
+}
+
+.container.active {
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  box-sizing: border-box;
+  border: 1.5px solid #5a2e9d;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #bd2331;
+  outline: none;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(90deg, #bd2331 0%, #5a2e9d 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 6px #60606044;
+  transition: background 0.3s;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(90deg, #5a2e9d 0%, #bd2331 100%);
+}
+
+.message {
+  margin: 15px 0;
+  padding: 10px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
