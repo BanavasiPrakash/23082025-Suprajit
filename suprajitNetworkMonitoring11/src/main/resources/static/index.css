@@ -17,8 +17,8 @@ body {
 .header-container-vertical {
     display: flex;
     align-items: center;
-    gap: 16px;
-    max-width: 1350px;
+    gap: 150px; /* Large gap unchanged */
+    max-width: 1450px;
     margin: 0 auto 20px auto;
     padding: 0 25px;
     width: 100%;
@@ -26,15 +26,16 @@ body {
 }
 
 .suprajit-logo {
-    height: 60px;
+    height: 90px;
     width: auto;
     display: block;
+    align-self: center; /* Vertically center the logo */
 }
 
 .title-and-updated {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Title text left aligned */
     flex: 1;
 }
 
@@ -46,18 +47,68 @@ body {
     font-size: 2.5rem;
     letter-spacing: 2px;
     text-shadow: 0 2px 12px #0f53d24c;
+    text-align: left;
+}
+
+/* NEW: Wrapper to center lastUpdated and legend horizontally */
+.centered-below-title {
+    width: 100%;
     text-align: center;
+    margin-top: 6px;
 }
 
 .title-and-updated #lastUpdated {
-    margin: 8px 0 0 0;
+    margin: 0;
     font-size: 16px;
     color: hsl(0, 4%, 95%);
-    text-align: center;
     white-space: nowrap;
 }
 
-/* --- FORM SECTION --- (if you want to keep for consistency) */
+.status-legend {
+    margin-top: 8px;
+    display: inline-flex; /* to center horizontally */
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: hsl(0, 4%, 95%);
+    width: auto;
+}
+
+.status-legend div {
+    display: inline-block;
+}
+
+.status-legend-box {
+    width: auto;
+    min-width: 70px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    color: white;
+    font-weight: 900;
+    text-align: center;
+    user-select: none;
+}
+
+/* Status colors remain the same */
+.status-green {
+    background-color: #8FC63D;
+}
+
+.status-yellow {
+    background-color: #5a2e9d;
+}
+
+.status-orange {
+    background-color: #ef6724;
+}
+
+.status-red {
+    background-color: #bd2331;
+}
+
+/* --- FORM SECTION --- */
 .form-section {
     background: #1e4489;
     padding: 10px 15px;
@@ -139,16 +190,17 @@ form button:focus {
     background: #1e4489;
     color: #fff;
     font-size: 14px;
+    font-weight: 900;
     border-bottom-width: 3px;
     padding: 6px 10px;
     height: auto;
     line-height: normal;
 }
 
-/* Table cells - same padding/font for both tables */
 #ipTable td, #statusTable td {
     padding: 5px 8px;
-    font-size: 12px;
+    font-size: 14px;
+    
     min-width: 0;
     max-width: 150px;
     line-height: 1.1;
@@ -159,18 +211,10 @@ form button:focus {
     /* background-color removed to honor status classes in statusTable */
 }
 
-/* Keep background for ipTable striped rows */
 #ipTable tbody tr:nth-child(even) td {
     background: #e6f2fb;
 }
 
-/* Remove striping for statusTable to show only status colors on cells */
-/* Uncomment if you want to explicitly disable striping */
-/* #statusTable tbody tr:nth-child(even) td { */
-/*     background-color: transparent !important; */
-/* } */
-
-/* Animation */
 table {
     width: 100%;
     border-collapse: separate;
@@ -202,28 +246,36 @@ th {
     color: white;
 }
 
-/* STATUS COLORS */
 .status-green {
     color: white;
     background-color: #8FC63D;
 }
-.status-yellow {
-    color: white;
-    background-color: #5a2e9d;
-}
-.status-orange {
-    color: white;
-    background-color: #ef6724;
-}
+
 .status-red {
     color: white;
     background-color: #bd2331;
 }
 
-#statusTable td.status-green:hover {transform: scale(1.06) translateY(-5px); box-shadow: 0 0 20px #BFC63D88; z-index:2;}
-#statusTable td.status-yellow:hover {transform: scale(1.06) translateY(-5px); box-shadow: 0 0 20px #5a2e9d88; z-index:2;}
-#statusTable td.status-orange:hover {transform: scale(1.06) translateY(-5px); box-shadow: 0 0 20px #ef672488; z-index:2;}
-#statusTable td.status-red:hover {transform: scale(1.06) translateY(-5px); box-shadow: 0 0 20px #bd233188; z-index:2;}
+#statusTable td.status-green:hover {
+    transform: scale(1.06) translateY(-5px);
+    box-shadow: 0 0 20px #BFC63D88;
+    z-index: 2;
+}
+#statusTable td.status-yellow:hover {
+    transform: scale(1.06) translateY(-5px);
+    box-shadow: 0 0 20px #5a2e9d88;
+    z-index: 2;
+}
+#statusTable td.status-orange:hover {
+    transform: scale(1.06) translateY(-5px);
+    box-shadow: 0 0 20px #ef672488;
+    z-index: 2;
+}
+#statusTable td.status-red:hover {
+    transform: scale(1.06) translateY(-5px);
+    box-shadow: 0 0 20px #bd233188;
+    z-index: 2;
+}
 
 /* --- NAVIGATION BUTTONS --- */
 .nav-button {
@@ -235,6 +287,7 @@ th {
     text-decoration: none;
     transition: background 0.25s;
 }
+
 .nav-button:hover {
     background: #3FA8ED;
 }
@@ -251,80 +304,124 @@ th {
     transition: background 0.2s;
     font-size: 12.5px;
 }
+
 .delete-btn:hover {
     background-color: #5a2e9d;
 }
-.edit-btn, .save-btn, .cancel-btn {
-  margin-right: 5px;
-  background-color: #ef6724;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-}
-.edit-btn:hover, .save-btn:hover, .cancel-btn:hover {
-  background-color: #bd2331;
+
+.edit-btn,
+.save-btn,
+.cancel-btn {
+    margin-right: 5px;
+    background-color: #ef6724;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
 }
 
+.edit-btn:hover,
+.save-btn:hover,
+.cancel-btn:hover {
+    background-color: #bd2331;
+}
 
 /* --- RESPONSIVE DESIGN --- */
 @media (max-width: 900px) {
-    .form-section, .list-section, .header-container {
+    .form-section,
+    .list-section,
+    .header-container {
         max-width: 97vw;
         padding-left: 3vw;
         padding-right: 3vw;
     }
 }
+
 @media (max-width: 700px) {
-    table { font-size: 14px; }
-    th, td { padding: 6px; }
-    .header-container { flex-direction: column; gap: 18px; }
-    .form-section, .list-section { padding: 7px 2vw; }
-    #ipTable td { height: auto; }
+    table {
+        font-size: 14px;
+    }
+    th,
+    td {
+        padding: 6px;
+    }
+    .header-container {
+        flex-direction: column;
+        gap: 18px;
+    }
+    .form-section,
+    .list-section {
+        padding: 7px 2vw;
+    }
+    #ipTable td {
+        height: auto;
+    }
 }
-/* Use your existing status color classes for the legend boxes */
+
+/* Status legend styling */
 .status-legend {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  font-size: 10px;
-  color: hsl(0, 4%, 95%);
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: hsl(0, 4%, 95%);
 }
 
 .status-legend div {
-  /* Remove gap and center text inside boxes */
-  display: inline-block;
+    display: inline-block;
 }
 
 .status-legend-box {
-  width: auto;
-  min-width: 70px;
-  padding: 4px 12px;
-  border-radius: 4px;
-  display: inline-block;
-  color: white;
-  font-weight: 600;
-  text-align: center;
-  user-select: none;
+    width: auto;
+    min-width: 70px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    color: white;
+    font-weight: 900;
+    text-align: center;
+    user-select: none;
 }
 
-/* Status colors remain same */
+/* Status colors remain the same */
 .status-green {
-  background-color: #8FC63D;
+    background-color: #8FC63D;
 }
 
 .status-yellow {
-  background-color: #5a2e9d;
+    background-color: #5a2e9d;
 }
 
 .status-orange {
-  background-color: #ef6724;
+    background-color: #ef6724;
 }
 
 .status-red {
-  background-color: #bd2331;
+    background-color: #bd2331;
+}
+
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 1000px;
+  height: 1000px;
+  background: url('suprajit_logo.png') no-repeat center center;
+  background-size: contain;
+  opacity: 0.10;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+  animation: rotateLogo 8s linear infinite;
+}
+
+@keyframes rotateLogo {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }

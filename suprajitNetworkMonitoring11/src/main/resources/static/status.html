@@ -7,26 +7,38 @@
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
+  
   <header>
     <div class="header-container-vertical">
-      <img src="suprajit_logo_BG.png" alt="Suprajit Logo" class="suprajit-logo" />
-      <div class="title-and-updated">
-        <h1>CONNECTIVITY STATUS</h1>
-        <p id="lastUpdated">Last Updated: --</p>
+      <!-- LEFT LOGO -->
+      <img src="suprajit_logo_BG.png" alt="Left Logo" class="suprajit-logo" />
 
-        <div class="status-legend">
-    <div><span class="status-legend-box status-green">Online</span></div>
-    <div><span class="status-legend-box status-red">Down</span></div>
-    <div><span class="status-legend-box status-orange">Degraded</span></div>
-    <div><span class="status-legend-box status-yellow">Warning</span></div>
-</div>
+      <!-- TITLE AND STATUS -->
+      <div class="title-and-updated">
+        <div class="title-container">
+       
+          <h1>CONNECTIVITY STATUS</h1>
+         
+        </div>
+        
+        <div class="centered-below-title">
+          <p id="lastUpdated">Last Updated: --</p>
+          <div class="status-legend">
+            <div><span class="status-legend-box status-green">Online</span></div>
+            <div><span class="status-legend-box status-red">Down</span></div>
+          </div>
+        </div>
       </div>
+
+      <!-- RIGHT LOGO (optional if needed) -->
+      <img src="suprajit_logo_BG.png" alt="Right Logo" class="suprajit-logo" />
     </div>
   </header>
+
   <main>
     <table id="statusTable">
       <tbody>
-        <!-- Dynamic rows -->
+        <!-- Dynamic rows via script -->
       </tbody>
     </table>
     <div class="navigation">
