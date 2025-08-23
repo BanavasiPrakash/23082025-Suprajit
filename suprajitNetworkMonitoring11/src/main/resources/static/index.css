@@ -418,7 +418,7 @@ body::before {
   transform: translate(-50%, -50%);
   z-index: 0;
   pointer-events: none;
-  animation: rotateLogo 8s linear infinite;
+  animation: rotateLogo 5s linear infinite;
 }
 
 @keyframes rotateLogo {
