@@ -1,8 +1,8 @@
 package com.ipmonitoring.ipmonitoringapp.service;
 
 import java.net.InetAddress;
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,57 +29,49 @@ public class IpHealthCheckService {
         List<IpAddress> ips = repository.findAll();
         for (IpAddress ipAddress : ips) {
             String previousStatus = ipAddress.getStatus();
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
+            String newStatus = "Error";
 
             try {
                 InetAddress inet = InetAddress.getByName(ipAddress.getIp());
                 boolean reachable = inet.isReachable(2000); // 2s timeout
-                String newStatus = reachable ? "Online" : "Down";
-
-                if (!newStatus.equals(previousStatus)) {
-                    ipAddress.setStatusChangeCount(ipAddress.getStatusChangeCount() + 1);
-                    ipAddress.setLastStatusChangeEnd(now);
-                    ipAddress.setLastStatusChangeStart(now);
-                }
-                ipAddress.setStatus(newStatus);
+                newStatus = reachable ? "Online" : "Down";
             } catch (Exception e) {
-                if (!"Error".equals(previousStatus)) {
-                    ipAddress.setStatusChangeCount(ipAddress.getStatusChangeCount() + 1);
-                    ipAddress.setLastStatusChangeEnd(now);
-                    ipAddress.setLastStatusChangeStart(now);
-                }
-                ipAddress.setStatus("Error");
+                newStatus = "Error";
+            }
+
+            // If status changed, update status change info
+            if (previousStatus == null || !newStatus.equals(previousStatus)) {
+                ipAddress.setStatusChangeCount(ipAddress.getStatusChangeCount() + 1);
+                ipAddress.setLastStatusChangeStart(ipAddress.getLastStatusChangeEnd() != null ? ipAddress.getLastStatusChangeEnd() : now);
+                ipAddress.setLastStatusChangeEnd(now);
+                ipAddress.setStatus(newStatus);
+            } else {
+                ipAddress.setStatus(newStatus);
             }
 
             ipAddress.setLastChecked(now);
             repository.save(ipAddress);
 
-            // Save a record to history only when status changes
-            if (!ipAddress.getStatus().equals(previousStatus)) {
+            // Add to history if status changed or initial insert
+            if (previousStatus == null || !newStatus.equals(previousStatus)) {
                 IpStatusHistory history = new IpStatusHistory();
                 history.setIpId(ipAddress.getId());
                 history.setLocation(ipAddress.getLocation());
                 history.setIp(ipAddress.getIp());
-                history.setStatus(ipAddress.getStatus());
+                history.setStatus(newStatus);
                 history.setCheckedAt(now);
                 history.setStatusChangeCount(ipAddress.getStatusChangeCount());
-
-                if (ipAddress.getLastStatusChangeStart() != null && ipAddress.getLastStatusChangeEnd() != null) {
-                    long duration = Duration.between(ipAddress.getLastStatusChangeStart(), ipAddress.getLastStatusChangeEnd()).getSeconds();
-                    history.setDurationSeconds(duration);
-                } else {
-                    history.setDurationSeconds(0L);
-                }
 
                 historyRepository.save(history);
             }
         }
     }
 
-    // Scheduled task for cleaning up old history records older than 3 days
-    @Scheduled(cron = "0 0 0 * * ?") // at midnight every day
+    // Delete history older than 3 days, runs daily at midnight
+    @Scheduled(cron = "0 0 0 * * ?")
     public void cleanOldStatusHistory() {
-        LocalDateTime cutoff = LocalDateTime.now().minusDays(3);
+        LocalDateTime cutoff = LocalDateTime.now(ZoneId.of("Asia/Kolkata")).minusDays(3);
         historyRepository.deleteByCheckedAtBefore(cutoff);
     }
 }

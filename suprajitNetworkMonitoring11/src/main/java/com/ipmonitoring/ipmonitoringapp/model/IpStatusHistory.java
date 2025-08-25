@@ -2,7 +2,13 @@
 package com.ipmonitoring.ipmonitoringapp.model;
 
 import java.time.LocalDateTime;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ip_status_history")
@@ -27,8 +33,8 @@ public class IpStatusHistory {
     @Column(name = "status_change_count")
     private int statusChangeCount;
 
-    @Column(name = "duration_seconds")
-    private Long durationSeconds;
+    // @Column(name = "duration_seconds")
+    // private Long durationSeconds;
 
     // Getters and setters
     public Long getId() { return id; }
@@ -52,6 +58,6 @@ public class IpStatusHistory {
     public int getStatusChangeCount() { return statusChangeCount; }
     public void setStatusChangeCount(int statusChangeCount) { this.statusChangeCount = statusChangeCount; }
 
-    public Long getDurationSeconds() { return durationSeconds; }
-    public void setDurationSeconds(Long durationSeconds) { this.durationSeconds = durationSeconds; }
+    // public Long getDurationSeconds() { return durationSeconds; }
+    // public void setDurationSeconds(Long durationSeconds) { this.durationSeconds = durationSeconds; }
 }

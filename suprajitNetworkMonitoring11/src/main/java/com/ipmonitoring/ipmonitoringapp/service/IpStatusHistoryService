@@ -1,0 +1,50 @@
+package com.ipmonitoring.ipmonitoringapp.service;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
+import com.ipmonitoring.ipmonitoringapp.model.IpAddress;
+import com.ipmonitoring.ipmonitoringapp.model.IpStatusHistory;
+import com.ipmonitoring.ipmonitoringapp.repository.IpStatusHistoryRepository;
+
+@Service
+public class IpStatusHistoryService {
+
+    private final IpStatusHistoryRepository historyRepository;
+
+    public IpStatusHistoryService(IpStatusHistoryRepository historyRepository) {
+        this.historyRepository = historyRepository;
+    }
+
+    public void addHistoryRecordIfNeeded(IpStatusHistory lastRecord, IpAddress ip, String currentStatus) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
+
+        if (lastRecord == null) {
+            createHistory(ip, currentStatus, 1, now);
+            return;
+        }
+
+        boolean statusChanged = !Objects.equals(lastRecord.getStatus(), currentStatus);
+        boolean timeElapsed = Duration.between(lastRecord.getCheckedAt(), now).toMinutes() >= 1;
+
+        if (statusChanged || timeElapsed) {
+            int newCount = statusChanged ? 1 : lastRecord.getStatusChangeCount() + 1;
+            createHistory(ip, currentStatus, newCount, now);
+        }
+    }
+
+    private void createHistory(IpAddress ip, String status, int count, LocalDateTime checkedAt) {
+        IpStatusHistory history = new IpStatusHistory();
+        history.setIpId(ip.getId());
+        history.setLocation(ip.getLocation());
+        history.setIp(ip.getIp());
+        history.setStatus(status);
+        history.setStatusChangeCount(count);
+        history.setCheckedAt(checkedAt);
+        historyRepository.save(history);
+    }
+}

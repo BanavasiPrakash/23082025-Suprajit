@@ -20,7 +20,6 @@ async function fetchWithAuth(url, options = {}) {
         ...options.headers,
         'Content-Type': 'application/x-www-form-urlencoded',
     };
-    // Add credentials if needed for cookie-based auth
     options.credentials = "include";
     const response = await fetch(url, options);
     if (response.status === 401 || response.status === 403) {
@@ -80,6 +79,7 @@ async function renderTable() {
             const locInput = row.querySelector('.edit-location');
             const ipInput = row.querySelector('.edit-ip');
 
+            // Edit button
             editBtn.onclick = () => {
                 locSpan.style.display = 'none';
                 ipSpan.style.display = 'none';
@@ -91,6 +91,7 @@ async function renderTable() {
                 deleteBtn.style.display = 'none';
             };
 
+            // Cancel button
             cancelBtn.onclick = () => {
                 locInput.value = item.location;
                 ipInput.value = item.ip;
@@ -104,6 +105,7 @@ async function renderTable() {
                 deleteBtn.style.display = 'inline-block';
             };
 
+            // Save button
             saveBtn.onclick = async () => {
                 const newLoc = locInput.value.trim();
                 const newIp = ipInput.value.trim();
@@ -114,7 +116,7 @@ async function renderTable() {
                 const formData = new URLSearchParams();
                 formData.append("location", newLoc);
                 formData.append("ip", newIp);
-                formData.append("username", currentUser.username); // Pass username for admin check
+                formData.append("username", currentUser.username);
                 const updateResponse = await fetchWithAuth(`/api/ip/${item.id}`, {
                     method: 'PUT',
                     body: formData.toString(),
@@ -126,13 +128,12 @@ async function renderTable() {
                 }
             };
 
+            // Delete button
             deleteBtn.onclick = async () => {
                 const confirmDelete = confirm("Are you sure you want to delete this IP?");
                 if (!confirmDelete) return;
-                const formData = new URLSearchParams();
-                formData.append("username", currentUser.username); // Pass username for admin check
                 const deleteResponse = await fetchWithAuth(`/api/ip/${item.id}?username=${encodeURIComponent(currentUser.username)}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
                 });
                 if (deleteResponse && deleteResponse.ok) {
                     renderTable();
@@ -146,20 +147,39 @@ async function renderTable() {
 
 ipForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const location = document.getElementById("location").value.trim();
     const ip = document.getElementById("ipAddress").value.trim();
+
     if (!location || !ip) return;
+
+    // Optional: IP validation (IPv4)
+    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+    if (!ipRegex.test(ip)) {
+        alert("Please enter a valid IPv4 address.");
+        return;
+    }
+
     const formData = new URLSearchParams();
     formData.append("location", location);
     formData.append("ip", ip);
-    formData.append("username", currentUser.username); // Pass username for admin check
+    formData.append("username", currentUser.username);
+
     const response = await fetchWithAuth('/api/ip', {
         method: 'POST',
         body: formData.toString()
     });
-    if (response && response.ok) {
-        ipForm.reset();
-        renderTable();
+
+    if (response) {
+        if (response.status === 409) {
+            const message = await response.text();
+            alert(message);
+        } else if (response.ok) {
+            ipForm.reset();
+            renderTable();
+        } else {
+            alert("Failed to add IP address.");
+        }
     } else {
         alert("Failed to add IP address.");
     }

@@ -19,6 +19,7 @@ import com.ipmonitoring.ipmonitoringapp.model.IpAddress;
 import com.ipmonitoring.ipmonitoringapp.model.User;
 import com.ipmonitoring.ipmonitoringapp.repository.IpAddressRepository;
 import com.ipmonitoring.ipmonitoringapp.repository.UserRepository;
+import com.ipmonitoring.ipmonitoringapp.service.IpAddressService;
 
 @CrossOrigin
 @RestController
@@ -27,19 +28,19 @@ public class IpAddressController {
 
     private final IpAddressRepository repo;
     private final UserRepository userRepository;
+    private final IpAddressService ipAddressService;
 
-    public IpAddressController(IpAddressRepository repo, UserRepository userRepository) {
+    public IpAddressController(IpAddressRepository repo, UserRepository userRepository, IpAddressService ipAddressService) {
         this.repo = repo;
         this.userRepository = userRepository;
+        this.ipAddressService = ipAddressService;
     }
 
-    // Get all IP addresses (accessible to all logged-in users)
     @GetMapping
     public List<IpAddress> getAll() {
         return repo.findAll();
     }
 
-    // ========== NEW: Get all IPs with status change count and duration ==========
     @GetMapping("/status-details")
     public List<IpStatusDetails> getAllWithStatusDetails() {
         return repo.findAll().stream()
@@ -49,7 +50,6 @@ public class IpAddressController {
                     String ipaddr = ip.getIp();
                     String status = ip.getStatus();
                     int changeCount = ip.getStatusChangeCount();
-                    // Duration value (in seconds or formatted HH:mm:ss)
                     Long durationSeconds = null;
                     String formattedDuration = "";
                     if (ip.getLastStatusChangeStart() != null && ip.getLastStatusChangeEnd() != null) {
@@ -64,14 +64,13 @@ public class IpAddressController {
                 .collect(Collectors.toList());
     }
 
-    // DTO for status details:
     public static class IpStatusDetails {
         public Long id;
         public String location;
         public String ip;
         public String status;
         public int statusChangeCount;
-        public String lastStatusDuration; // format: HH:mm:ss
+        public String lastStatusDuration;
 
         public IpStatusDetails(Long id, String location, String ip, String status, int statusChangeCount, String lastStatusDuration) {
             this.id = id;
@@ -83,7 +82,6 @@ public class IpAddressController {
         }
     }
 
-    // Add new IP address (admin only)
     @PostMapping
     public ResponseEntity<?> add(@RequestParam String location, @RequestParam String ip,
                                  @RequestParam String username) {
@@ -91,14 +89,22 @@ public class IpAddressController {
         if (user == null || !user.getRole().equals("ADMIN")) {
             return ResponseEntity.status(403).body("Forbidden: Only admin can add IP addresses");
         }
+
+        if (repo.findByIp(ip).isPresent()) {
+            return ResponseEntity.status(409).body("IP address already exists.");
+        }
+
         IpAddress addr = new IpAddress();
         addr.setLocation(location);
         addr.setIp(ip);
-        IpAddress saved = repo.save(addr);
-        return ResponseEntity.ok(saved);
+        try {
+            IpAddress saved = repo.save(addr);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to add IP address.");
+        }
     }
 
-    // Delete IP address by id (admin only)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteIp(@PathVariable Long id, @RequestParam String username) {
         User user = userRepository.findByUsername(username).orElse(null);
@@ -108,11 +114,14 @@ public class IpAddressController {
         if (!repo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        repo.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            ipAddressService.deleteIpAddressSafely(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to delete IP address.");
+        }
     }
 
-    // Update IP address by id (admin only)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateIp(
             @PathVariable Long id,
