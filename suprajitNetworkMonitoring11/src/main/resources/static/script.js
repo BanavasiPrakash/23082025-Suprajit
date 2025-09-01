@@ -72,7 +72,7 @@ async function submitLogin(event) {
     });
 
     if (res.ok) {
-      const userData = await res.json(); 
+      const userData = await res.json();
       // safer: do NOT save password
       sessionStorage.setItem('currentUser', JSON.stringify({username: userData.username, role: userData.role}));
 
@@ -132,9 +132,40 @@ async function submitForgotPassword() {
     msg.textContent = 'Error: ' + error.message;
     msg.classList.add('error');
   }
-
-  
 }
 
-/* Default behavior: show login first */
-switchTab('login');
+/* Remove default visible cards or button highlights on page load */
+document.getElementById('new-user-btn').classList.remove('active');
+document.getElementById('login-btn').classList.remove('active');
+
+document.getElementById('signup-container').classList.remove('active');
+document.getElementById('login-container').classList.remove('active');
+document.getElementById('forgot-password-form').style.display = 'none';
+
+/* Hide card containers if clicking outside */
+document.body.addEventListener('click', function(event) {
+  const signupContainer = document.getElementById('signup-container');
+  const loginContainer = document.getElementById('login-container');
+  const forgotPasswordForm = document.getElementById('forgot-password-form');
+  
+  const cards = [signupContainer, loginContainer, forgotPasswordForm];
+  
+  const newUserBtn = document.getElementById('new-user-btn');
+  const loginBtn = document.getElementById('login-btn');
+
+  const clickedInsideCard = cards.some(card => card.contains(event.target));
+  const clickedOnButtons = (newUserBtn.contains(event.target) || loginBtn.contains(event.target));
+
+  if (!clickedInsideCard && !clickedOnButtons) {
+    signupContainer.classList.remove('active');
+    loginContainer.classList.remove('active');
+    forgotPasswordForm.style.display = 'none';
+    
+    newUserBtn.classList.remove('active');
+    loginBtn.classList.remove('active');
+    
+    document.getElementById('signup-message').textContent = '';
+    document.getElementById('login-message').textContent = '';
+    document.getElementById('reset-message').textContent = '';
+  }
+});

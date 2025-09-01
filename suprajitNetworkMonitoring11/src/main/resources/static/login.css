@@ -60,6 +60,8 @@ body::before {
   margin: 0 0 10px 0;
   text-align: center;
   letter-spacing: 3px;
+  
+  animation: slideInLeft 7s ease forwards;
 }
 
 .page-title {
@@ -69,6 +71,32 @@ body::before {
   margin: 0 0 40px 0;
   text-align: center;
   color: white;
+  
+  animation: slideInRight 7s ease forwards;
+}
+
+/* Animation for company title sliding in from left */
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Animation for page title sliding in from right */
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* Top-right "New User" / "Login" buttons */
@@ -105,10 +133,10 @@ body::before {
 /* Box containers for forms */
 .container {
   background: linear-gradient(120deg,
-        #1e4489 0%,
-        #3FA8ED 20%,
-        #5a2e9d 85%
-    );
+          #1e4489 0%,
+          #3FA8ED 20%,
+          #5a2e9d 85%
+      );
   box-shadow: 0 0 12px #2c2c2c55;
   border: 2px solid #5a2e9d;
   width: 350px;
@@ -154,10 +182,10 @@ button[type="submit"] {
 }
 button[type="submit"]:hover {
   background: linear-gradient(120deg,
-        #1e4489 0%,
-        #3FA8ED 20%,
-        #5a2e9d 85%
-    );
+          #1e4489 0%,
+          #3FA8ED 20%,
+          #5a2e9d 85%
+      );
 }
 
 /* Flash messages */
@@ -179,10 +207,10 @@ button[type="submit"]:hover {
 /* Forgot password form */
 #forgot-password-form {
   background: linear-gradient(120deg,
-        #1e4489 0%,
-        #3FA8ED 20%,
-        #5a2e9d 85%
-    );
+          #1e4489 0%,
+          #3FA8ED 20%,
+          #5a2e9d 85%
+      );
   box-shadow: 0 0 12px #2c2c2c55;
   border: 2px solid #5a2e9d;
   width: 350px;
@@ -226,10 +254,10 @@ button[type="submit"]:hover {
 
 #forgot-password-form button:hover {
    background: linear-gradient(120deg,
-        #1e4489 0%,
-        #3FA8ED 20%,
-        #5a2e9d 85%
-    );
+          #1e4489 0%,
+          #3FA8ED 20%,
+          #5a2e9d 85%
+      );
 }
 
 /* Forgot password small link card */
