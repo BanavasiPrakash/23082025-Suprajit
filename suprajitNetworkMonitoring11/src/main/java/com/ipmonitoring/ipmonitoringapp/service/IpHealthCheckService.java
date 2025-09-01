@@ -24,7 +24,7 @@ public class IpHealthCheckService {
         this.historyRepository = historyRepository;
     }
 
-    @Scheduled(fixedDelay = 2000) // every 2 seconds
+    @Scheduled(fixedDelay = 600000) // every 10 minutes (600,000 ms)
     public void healthCheckAllIps() {
         List<IpAddress> ips = repository.findAll();
         for (IpAddress ipAddress : ips) {
@@ -40,7 +40,9 @@ public class IpHealthCheckService {
                 newStatus = "Error";
             }
 
-            // If status changed, update status change info
+            // Update last checked time
+            ipAddress.setLastChecked(now);
+
             if (previousStatus == null || !newStatus.equals(previousStatus)) {
                 ipAddress.setStatusChangeCount(ipAddress.getStatusChangeCount() + 1);
                 ipAddress.setLastStatusChangeStart(ipAddress.getLastStatusChangeEnd() != null ? ipAddress.getLastStatusChangeEnd() : now);
@@ -50,26 +52,23 @@ public class IpHealthCheckService {
                 ipAddress.setStatus(newStatus);
             }
 
-            ipAddress.setLastChecked(now);
             repository.save(ipAddress);
 
-            // Add to history if status changed or initial insert
-            if (previousStatus == null || !newStatus.equals(previousStatus)) {
-                IpStatusHistory history = new IpStatusHistory();
-                history.setIpId(ipAddress.getId());
-                history.setLocation(ipAddress.getLocation());
-                history.setIp(ipAddress.getIp());
-                history.setStatus(newStatus);
-                history.setCheckedAt(now);
-                history.setStatusChangeCount(ipAddress.getStatusChangeCount());
+            // Always save history record every 10 minutes regardless of status change
+            IpStatusHistory history = new IpStatusHistory();
+            history.setIpId(ipAddress.getId());
+            history.setLocation(ipAddress.getLocation());
+            history.setIp(ipAddress.getIp());
+            history.setStatus(newStatus);
+            history.setCheckedAt(now);
+            history.setStatusChangeCount(ipAddress.getStatusChangeCount());
 
-                historyRepository.save(history);
-            }
+            historyRepository.save(history);
         }
     }
 
-    // Delete history older than 3 days, runs daily at midnight
-    @Scheduled(cron = "0 0 0 * * ?")
+    // Scheduled task to clean up old status history records
+    @Scheduled(cron = "0 0 0 * * ?") // runs daily at midnight
     public void cleanOldStatusHistory() {
         LocalDateTime cutoff = LocalDateTime.now(ZoneId.of("Asia/Kolkata")).minusDays(3);
         historyRepository.deleteByCheckedAtBefore(cutoff);

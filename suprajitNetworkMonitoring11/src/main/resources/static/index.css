@@ -106,14 +106,6 @@ body {
     background-color: #8FC63D;
 }
 
-.status-yellow {
-    background-color: #5a2e9d;
-}
-
-.status-orange {
-    background-color: #ef6724;
-}
-
 .status-red {
     background-color: #bd2331;
 }
@@ -402,13 +394,7 @@ th {
     background-color: #8FC63D;
 }
 
-.status-yellow {
-    background-color: #5a2e9d;
-}
 
-.status-orange {
-    background-color: #ef6724;
-}
 
 .status-red {
     background-color: #bd2331;

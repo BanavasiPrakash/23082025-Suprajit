@@ -99,6 +99,10 @@ public class IpAddressController {
         addr.setIp(ip);
         try {
             IpAddress saved = repo.save(addr);
+
+            // Immediately perform health check and update status in DB
+            ipAddressService.performImmediateHealthCheck(saved.getId());
+
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Failed to add IP address.");
