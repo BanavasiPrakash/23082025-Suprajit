@@ -42,12 +42,23 @@ public class UserService {
         return optionalUser.orElse(null);
     }
 
+    // Case-insensitive username search
+    public User findByUsernameIgnoreCase(String username) {
+        Optional<User> optionalUser = userRepository.findByUsernameIgnoreCase(username);
+        return optionalUser.orElse(null);
+    }
+
     // Find user by email - for password reset flow
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    // Save user - for updating user fields like password after reset
+    // Case-insensitive email search
+    public Optional<User> findByEmailIgnoreCase(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    // Save user - for updating user fields like password after reset or role update
     public void save(User user) {
         userRepository.save(user);
     }

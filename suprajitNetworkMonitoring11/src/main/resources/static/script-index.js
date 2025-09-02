@@ -9,6 +9,7 @@ if (!currentUser || currentUser.role !== "ADMIN") {
 const ipForm = document.getElementById("ipForm");
 const ipTableBody = document.querySelector("#ipTable tbody");
 
+// Helper fetch wrapper with auth and error handling
 async function fetchWithAuth(url, options = {}) {
     const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
     if (!currentUser || !currentUser.username) {
@@ -145,6 +146,7 @@ async function renderTable() {
     }
 }
 
+// IP Form Submission
 ipForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -153,7 +155,6 @@ ipForm.addEventListener("submit", async (e) => {
 
     if (!location || !ip) return;
 
-    // Optional: IP validation (IPv4)
     const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
     if (!ipRegex.test(ip)) {
         alert("Please enter a valid IPv4 address.");
@@ -185,5 +186,60 @@ ipForm.addEventListener("submit", async (e) => {
     }
 });
 
+// --- NEW ADMIN UI AND ACTIONS ---
+const newAdminBtn = document.getElementById('newAdminBtn');
+const adminActionContainer = document.getElementById('adminActionContainer');
+const adminIdentifierInput = document.getElementById('adminIdentifier');
+const addAdminBtn = document.getElementById('addAdminBtn');
+const removeAdminBtn = document.getElementById('removeAdminBtn');
+
+// Toggle the admin input container on NEW ADMIN button click
+newAdminBtn.addEventListener('click', () => {
+    if (adminActionContainer.style.display === 'none' || adminActionContainer.style.display === '') {
+        adminActionContainer.style.display = 'block';
+        adminIdentifierInput.focus();
+    } else {
+        adminActionContainer.style.display = 'none';
+    }
+});
+
+// Helper function to send promote/demote requests
+async function sendAdminRequest(url, identifier) {
+    if (!identifier) {
+        alert('Please enter a username or email.');
+        return;
+    }
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({identifier: identifier.trim()})
+        });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            alert(`Success: ${identifier}`);
+            adminActionContainer.style.display = 'none';
+            adminIdentifierInput.value = '';
+        } else {
+            alert(result.message || 'Operation failed.');
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+// Add Admin button click
+addAdminBtn.addEventListener('click', () => {
+    const identifier = adminIdentifierInput.value;
+    sendAdminRequest('http://localhost:8080/api/auth/promote-admin', identifier);
+});
+
+// Remove Admin button click
+removeAdminBtn.addEventListener('click', () => {
+    const identifier = adminIdentifierInput.value;
+    sendAdminRequest('http://localhost:8080/api/auth/demote-admin', identifier);
+});
+
+// Initial table render and periodic refresh
 renderTable();
 setInterval(renderTable, 9000);

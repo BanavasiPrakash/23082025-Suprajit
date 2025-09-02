@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,10 +30,10 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     public AuthController(UserService userService,
-            AuthenticationManager authenticationManager,
-            PasswordResetTokenRepository passwordResetTokenRepository,
-            EmailService emailService,
-            PasswordEncoder passwordEncoder) {
+                          AuthenticationManager authenticationManager,
+                          PasswordResetTokenRepository passwordResetTokenRepository,
+                          EmailService emailService,
+                          PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
@@ -41,8 +43,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestParam String username,
-            @RequestParam String email,
-            @RequestParam String password) {
+                                         @RequestParam String email,
+                                         @RequestParam String password) {
         try {
             userService.signup(username, email, password);
             return ResponseEntity.ok("User registered successfully");
@@ -71,7 +73,6 @@ public class AuthController {
         return ResponseEntity.status(401).body("Invalid credentials");
     }
 
-    // Endpoint to request password reset email
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         Optional<User> userOpt = userService.findByEmail(email);
@@ -94,7 +95,6 @@ public class AuthController {
         return ResponseEntity.ok("Password reset email sent");
     }
 
-    // Endpoint to reset password with token
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         Optional<PasswordResetToken> tokenOpt = passwordResetTokenRepository.findByToken(token);
@@ -103,11 +103,67 @@ public class AuthController {
         }
         User user = tokenOpt.get().getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
-        userService.save(user); // Use UserService save method here
+        userService.save(user);
 
         passwordResetTokenRepository.delete(tokenOpt.get());
 
         return ResponseEntity.ok("Password reset successful");
+    }
+
+    // NEW ADMIN PROMOTION ENDPOINT - case-insensitive lookup & debug
+    @PostMapping("/promote-admin")
+    public ResponseEntity<?> promoteAdmin(@RequestBody Map<String, String> payload) {
+        String identifier = payload.get("identifier");
+        System.out.println("PromoteAdmin called with identifier: " + identifier);
+
+        if (identifier == null || identifier.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Identifier (username/email) is required"));
+        }
+
+        User user = userService.findByUsernameIgnoreCase(identifier.trim());
+        if (user == null) {
+            System.out.println("User not found by username, trying by email");
+            Optional<User> userOpt = userService.findByEmailIgnoreCase(identifier.trim());
+            if (userOpt.isEmpty()) {
+                System.out.println("User not found by email either");
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "User not found"));
+            }
+            user = userOpt.get();
+        }
+
+        System.out.println("User found: " + user.getUsername());
+        user.setRole("ADMIN");
+        userService.save(user);
+
+        return ResponseEntity.ok(Collections.singletonMap("success", true));
+    }
+
+    // NEW ADMIN DEMOTION ENDPOINT - case-insensitive lookup & debug
+    @PostMapping("/demote-admin")
+    public ResponseEntity<?> demoteAdmin(@RequestBody Map<String, String> payload) {
+        String identifier = payload.get("identifier");
+        System.out.println("DemoteAdmin called with identifier: " + identifier);
+
+        if (identifier == null || identifier.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", "Identifier (username/email) is required"));
+        }
+
+        User user = userService.findByUsernameIgnoreCase(identifier.trim());
+        if (user == null) {
+            System.out.println("User not found by username, trying by email");
+            Optional<User> userOpt = userService.findByEmailIgnoreCase(identifier.trim());
+            if (userOpt.isEmpty()) {
+                System.out.println("User not found by email either");
+                return ResponseEntity.badRequest().body(Collections.singletonMap("message", "User not found"));
+            }
+            user = userOpt.get();
+        }
+
+        System.out.println("User found: " + user.getUsername());
+        user.setRole("USER"); // Demote the user to standard user role
+        userService.save(user);
+
+        return ResponseEntity.ok(Collections.singletonMap("success", true));
     }
 
     static class LoginResponse {
